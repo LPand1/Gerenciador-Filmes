@@ -17,4 +17,8 @@ class Filme extends Model
         'imagem_capa',
         'link_trailer',
     ];
+
+    public function categoria() {
+        return $this->belongsTo(Categoria::class);
+    }
 }
