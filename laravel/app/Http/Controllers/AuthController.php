@@ -9,5 +9,49 @@ use Illuminate\Facades\Hash;
 
 class AuthController extends Controller
 {
-    
+    public function login(Request $request) {
+        $credenciais = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credenciais)) {
+            $request->session()->regenerate();
+
+            return redirect()->route('filme.index')->with('mensagem', 'Login realizado');
+        }
+
+        return back()->withErrors([
+            'email' => 'Credenciais inválidas'
+        ])->onlyInput('email');
+    }
+
+    public function showRegister() {
+        return view('auth.register');
+    }
+
+    public function register(Request $request) {
+        $dados = $request->validate([
+            'name' => 'required|min:1|max:255',
+            'email' => 'required|email|unique:users, email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $dados['password'] = Hash::make($dados['password']);
+
+        $usuario = User::create($dados);
+
+        Auth::login($usuario);
+
+        return redirect()->route('filme.index')->with('mensagem', 'Cadastro realizado');
+    }
+
+    public function logout() {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('filme.index')->with('mensagem', 'Logout realizado');
+    }
 }

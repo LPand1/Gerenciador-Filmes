@@ -37,3 +37,11 @@ Route::prefix('/categoria')->group(function() {
         Route::delete('/{categoria}/delete', [CategoriaController::class, 'deleteDefinitivo'])->withTrashed();
     });
 });
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
