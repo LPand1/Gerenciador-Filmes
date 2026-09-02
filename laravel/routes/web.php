@@ -8,9 +8,7 @@ use App\Models\Filme;
 use App\Models\Categoria;
 use App\Models\User;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/filme');
 
 Route::prefix('/filme')->group(function() {
     Route::get('', [FilmeController::class, 'index'])->name('filme.index');
