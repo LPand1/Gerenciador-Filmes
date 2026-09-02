@@ -1,23 +1,29 @@
-<h1>Login</h1>
+@extends('filme\_base')
 
-@if ($errors->any())
-    <div>
-        @foreach($errors->all() as $erro)
-            <p>{{ $erro }}</p>
-        @endforeach
-    </div>
-@endif
+@section('conteudo')
 
-<form action="{{ route('login') }}" method="POST">
-    @csrf
+    <h1>Login</h1>
 
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" value="{{ old('email') }}">
+    @if ($errors->any())
+        <div>
+            @foreach($errors->all() as $erro)
+                <p>{{ $erro }}</p>
+            @endforeach
+        </div>
+    @endif
 
-    <label for="password">Senha</label>
-    <input type="senha" name="senha" id="senha">
+    <form action="{{ route('login') }}" method="POST">
+        @csrf
 
-    <button type="submit">Entrar</button>
-</form>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ old('email') }}">
 
-<p>Não tem conta? <a href="{{ route('register') }}">Cadastre-se</a></p>
+        <label for="password">Senha</label>
+        <input type="password" name="password" id="password">
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p>Não tem conta? <a href="{{ route('register') }}">Cadastre-se</a></p>
+
+@endsection

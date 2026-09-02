@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Facades\Auth;
-use Illuminate\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -26,6 +26,10 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
+    public function showLogin() {
+        return view('auth.login');
+    }
+
     public function showRegister() {
         return view('auth.register');
     }
@@ -33,11 +37,12 @@ class AuthController extends Controller
     public function register(Request $request) {
         $dados = $request->validate([
             'name' => 'required|min:1|max:255',
-            'email' => 'required|email|unique:users, email',
-            'password' => 'required|min:8|confirmed',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:3|confirmed',
         ]);
 
         $dados['password'] = Hash::make($dados['password']);
+        $dados['is_admin'] = $request->boolean('is_admin'); // ← nova linha
 
         $usuario = User::create($dados);
 
@@ -46,7 +51,7 @@ class AuthController extends Controller
         return redirect()->route('filme.index')->with('mensagem', 'Cadastro realizado');
     }
 
-    public function logout() {
+    public function logout(Request $request) {
         Auth::logout();
 
         $request->session()->invalidate();

@@ -7,38 +7,52 @@ use Illuminate\Http\Request;
 
 class FilmeController extends Controller
 {
-    public function index() {
-        $filmes = Filme::all();
+    public function index(Request $request) {
+    $query = Filme::with('categoria');
 
-        // dd($filmes);
-
-        return view('filme.index', [
-            'filmes' => $filmes,
-        ]);
+    if ($request->filled('ano')) {
+        $query->where('ano', $request->ano);
     }
+
+    if ($request->filled('categoria_id')) {
+        $query->where('categoria_id', $request->categoria_id);
+    }
+
+    $filmes = $query->get();
+
+    return view('filme.index', [
+        'filmes' => $filmes,
+        'categorias' => \App\Models\Categoria::orderBy('nome')->get(),
+        'anos' => Filme::select('ano')->distinct()->orderBy('ano', 'desc')->pluck('ano'),
+    ]);
+}
 
     public function create(Request $request) {
-        if ($request->isMethod('post')) {
-            $dados = $request->validate([
-                'titulo' => 'required|min:1|max:255',
-                'sinpopse' => 'nullable|min:1|max:1000',
-                'ano' => 'required|integer',
-                'categoria_id' => 'required|integer',
-                'imagem_capa' => 'nullable|image',
-                'link_trailer' => 'required|min:1|max|255',
-            ]);
+    if ($request->isMethod('post')) {
+        $dados = $request->validate([
+            'titulo' => 'required|min:1|max:255',
+            'sinopse' => 'nullable|min:1|max:1000',
+            'ano' => 'required|integer',
+            'categoria_id' => 'required|integer|exists:categorias,id',
+            'imagem_capa' => 'nullable|image',
+            'link_trailer' => 'required|min:1|max:255',
+        ]);
 
-            if ($request->hasFile('imagem')) {
-                $dados['imagem'] = $request->file('imagem')->store('imagens', 'public');
-            }
-
-            Filme::create($dados);
-
-            return redirect()->route('filme.index')->with('mensagem', 'Filme salvo');
+        if ($request->hasFile('imagem_capa')) {
+            $dados['imagem_capa'] = $request->file('imagem_capa')->store('imagens', 'public');
         }
 
-        return view('filme/create');
+        $dados['user_id'] = auth()->id();
+
+        Filme::create($dados);
+
+        return redirect()->route('filme.index')->with('mensagem', 'Filme salvo');
     }
+
+    return view('filme.create', [
+        'categorias' => \App\Models\Categoria::orderBy('nome')->get(),
+    ]);
+}
 
     public function delete(Filme $filme) {
         if (request()->isMethod('delete')) {
@@ -61,23 +75,24 @@ class FilmeController extends Controller
                 'ano' => 'required|integer',
                 'categoria_id' => 'required|integer',
                 'imagem_capa' => 'nullable|image',
-                'link_trailer' => 'required|min:1|max|255',
+                'link_trailer' => 'required|min:1|max:255',
             ]);
 
-            if ($request->hasFile('imagem')) {
+            if ($request->hasFile('imagem_capa')) {
                 if ($filme->imagem) {
                     \Storage::disk('public')->delete($filme->imagem);
                 }
 
-                $dados['imagem'] = $request->file('imagem')->store('imagens', 'public'); 
+                $dados['imagem_capa'] = $request->file('imagem_capa')->store('imagens', 'public'); 
             }
 
             $filme->update($dados); 
             return redirect()->route('filme.index')->with('mensagem', 'Filme atualizado com sucesso');
         }
 
-        return view('item/create', [
+        return view('filme.create', [
             'filme' => $filme,
+            'categorias' => \App\Models\Categoria::orderBy('nome')->get(),
         ]);
     }
 
@@ -111,4 +126,12 @@ class FilmeController extends Controller
             'filme' => $filme,   
         ]);
     }
+
+    public function show(Filme $filme) {
+        return view('filme.show', [
+            'filme' => $filme,
+        ]);
+    }
  }
+
+ 

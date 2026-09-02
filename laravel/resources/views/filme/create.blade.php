@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    <form method="post" action="{{ isset($filme) ? route('filme.edit', $filme->id : route ('filme.create')) }}" enctype="multipart/form-data">
+    <form method="post" action="{{ isset($filme) ? route('filme.edit', $filme->id) : route('filme.create') }}" enctype="multipart/form-data">
         @csrf
         @if (isset($filme))
             @method('PUT')

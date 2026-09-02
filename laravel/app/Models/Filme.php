@@ -14,6 +14,7 @@ class Filme extends Model
         'sinopse',
         'ano',
         'categoria_id',
+        'user_id',
         'imagem_capa',
         'link_trailer',
     ];

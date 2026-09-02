@@ -1,29 +1,38 @@
-<h1>Cadastro</h1>
+@extends('filme\_base')
 
-@if ($errors->any())
-    <div>
-        @foreach($errors->all() as $erro)
-            <p>{{ $erro }}</p>
-        @endforeach 
-    </div>
-@endif
+@section('conteudo')
 
-<form action="{{ route('register') }}" method="POST">
-    @csrf
+    <h1>Cadastro</h1>
 
-    <label for="name">Nome</label>
-    <input type="text" name="nome" id="name" value="{{ old('name') }}">
+    @if ($errors->any())
+        <div>
+            @foreach($errors->all() as $erro)
+                <p>{{ $erro }}</p>
+            @endforeach 
+        </div>
+    @endif
 
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" value="{{ old('email') }}">
+    <form action="{{ route('register') }}" method="POST">
+        @csrf
 
-    <label for="password">Senha</label>
-    <input type="password" name="password" id="password">
+        <label for="name">Nome</label>
+        <input type="text" name="name" id="name" value="{{ old('name') }}">
 
-    <label for="password_confirmation">Confirme a senha</label>
-    <input type="password" name="password_confirmation" id="password_confirmation">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" value="{{ old('email') }}">
 
-    <button type="submit">Cadastrar</button>
-</form>
+        <label for="password">Senha</label>
+        <input type="password" name="password" id="password">
 
-<p>Já tem conta? <a href="{{ route('login') }}">Fazer Login</a></p>
+        <label for="password_confirmation">Confirme a senha</label>
+        <input type="password" name="password_confirmation" id="password_confirmation">
+
+        <label>
+        <input type="checkbox" name="is_admin" value="1" {{ old('is_admin') ? 'checked' : '' }}>Cadastrar como administrador</label>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p>Já tem conta? <a href="{{ route('login') }}">Fazer Login</a></p>
+
+@endsection
